@@ -17,7 +17,6 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from keras.callbacks import EarlyStopping
 from sklearn import metrics
-
 import tensorflow as tf
 from sklearn.cross_validation import train_test_split
 from sklearn.calibration import CalibratedClassifierCV
@@ -31,7 +30,6 @@ import pdb
 import random
 from random import randint
 import scipy.io
-
 from keras.models import Sequential
 from keras.layers.core import  AutoEncoder, Dropout, Activation, Flatten, Merge, Dense
 from keras.layers.normalization import BatchNormalization

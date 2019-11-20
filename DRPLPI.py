@@ -119,16 +119,7 @@ def get_3_protein_struct_trids():
         nucle_com.append(ch0 + ch1 + ch2)
     return  nucle_com    
 
-
 def translate_sequence (seq, TranslationDict):
-    '''
-    Given (seq) - a string/sequence to translate,
-    Translates into a reduced alphabet, using a translation dict provided
-    by the TransDict_from_list() method.
-    Returns the string/sequence in the new, reduced alphabet.
-    Remember - in Python string are immutable..
-
-    '''
     import string
     from_list = []
     to_list = []
@@ -137,7 +128,6 @@ def translate_sequence (seq, TranslationDict):
         to_list.append(v)    
     TRANS_seq = seq.translate(string.maketrans(str(from_list), str(to_list)))    
     return TRANS_seq
-
 
 def get_4_nucleotide_composition(tris, seq, pythoncount = True):
     seq_len = len(seq)
@@ -164,18 +154,17 @@ def TransDict_from_list(groups):
     result = {}
     index = 0
     for group in groups:
-        g_members = sorted(group) #Alphabetically sorted list
+        g_members = sorted(group) 
         for c in g_members:            
-            result[c] = str(tar_list[index]) #K:V map, use group's first letter as represent.
+            result[c] = str(tar_list[index]) 
         index = index + 1
     return result
-
 
 def prepare_data(deepmind = False, seperate=False):
     print "loading data"
     lncRNA = pd.read_csv("zma_lncRNA.csv")
     protein = pd.read_csv("zma_rbp.csv")
-    interaction = pd.read_fwf("ZMAInteraction.txt") #fwf stands for fixed width formatted lines
+    interaction = pd.read_fwf("ZMAInteraction.txt") 
     
     interaction_pair = {}
     RNA_seq_dict = {}
@@ -211,13 +200,13 @@ def prepare_data(deepmind = False, seperate=False):
     for key, val in interaction_pair.iteritems():
         protein, RNA = key[0], key[1]
         
-        if RNA_seq_dict.has_key(RNA) and protein_seq_dict.has_key(protein): #and protein_fea_dict.has_key(protein) and      RNA_fea_dict.has_key(RNA):
+        if RNA_seq_dict.has_key(RNA) and protein_seq_dict.has_key(protein): 
             label.append(val)
             RNA_seq = RNA_seq_dict[RNA]
             protein_seq = translate_sequence (protein_seq_dict[protein], group_dict)
             if deepmind:
-                RNA_tri_fea = test_feature_extract(feature, RNA_seq)
-                protein_tri_fea = test_protein_feature_extract(feature, protein_seq_dict[protein])
+                RNA_tri_fea = rna_feature_extract(feature, RNA_seq)
+                protein_tri_fea = protein_feature_extract(feature, protein_seq_dict[protein])
                 train.append((RNA_tri_fea, protein_tri_fea))
             else:
                 
@@ -261,7 +250,7 @@ def SSEC():
     # tris3 = get_3_trids()
     bpf = []
     kmer = []
-    for i in protein_seq_dict:  # and protein_fea_dict.has_key(protein) and RNA_fea_dict.has_key(RNA):
+    for i in protein_seq_dict:  
 
         protein_seq = translate_sequence(protein_seq_dict[i], group_dict)
         protein_tri_fea = get_4_nucleotide_composition(protein_tris, protein_seq, pythoncount =False)
@@ -279,7 +268,6 @@ def kmer(kmerid, k):
 		kmerid = int(kmerid/4)
 
 	return kmer
-
 
 def InsertgappedVect(seq, g=8):  # 1___1
     feature=[]
@@ -325,8 +313,6 @@ def reverse_complement_features(feature, seq):
     count_6 = 0
     count_7 = 0
     count_8 = 0
-    count_9 = 0
-    count_10 = 0
 
     for i in range(0, len(seq) - 5 + 1):
     	pattern = []
@@ -351,10 +337,6 @@ def reverse_complement_features(feature, seq):
     			count_7 += 1
     		elif(s == 'TATAA' or s == 'TTATA'):
     			count_8 += 1
-    		elif(s == 'TATCA' or s == 'TGATA'):
-    			count_9 += 1
-    		else:
-    			count_10 += 1
 
     feature.append(count_1/L5)
     feature.append(count_2/L5)
@@ -364,9 +346,7 @@ def reverse_complement_features(feature, seq):
     feature.append(count_6/L5)
     feature.append(count_7/L5)
     feature.append(count_8/L5)
-    feature.append(count_9/L5)
-    feature.append(count_10/L5)
-   
+       
     return feature
 
 finstr = open('zma_RNAStruct.fa', "r")
@@ -375,8 +355,7 @@ bar = 5
 
 res_list = []
 
-
-def test_feature_extract(feature, seq):
+def rna_feature_extract(feature, seq):
 	tris = get_tris()
 	feature = []
 	tkmer = get_tri_nucleotide_composition(tris, seq)
@@ -476,7 +455,6 @@ def test_feature_extract(feature, seq):
         feature = np.append(kmer,result[:5])
 	return feature
 
-
 def BPF(seq_temp):
     seq = seq_temp
     chars = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
@@ -527,7 +505,7 @@ def BPF(seq_temp):
         fea = fea + tem_vec
     return fea
 
-def test_protein_feature_extract(feature, seq):	
+def protein_feature_extract(feature, seq):	
 	tris = get_tris()
 	feature = []	
 	bpf = BPF(seq)
@@ -592,7 +570,7 @@ def read_name_from_fasta(fasta_file):
     fp.close()
     return name_list
 
-def prepare_NPinter_feature(extract_only_posi = False, graph = False, deepmind = False, seperate = False, chem_fea = True):
+def prepare_NPinter_feature(seperate = False, chem_fea = True):
     print 'NPinter data'
     name_list = read_name_from_fasta('NPinter_RNA_seq.fa')
     seq_dict = read_fasta_file('NPinter_RNA_seq.fa')
@@ -680,31 +658,23 @@ def prepare_NPinter_feature(extract_only_posi = False, graph = False, deepmind =
                         tmp_fea = (protein_tri_fea, RNA_tri_fea)
                     else:
                         tmp_fea = protein_tri_fea + RNA_tri_fea
-                    train.append(tmp_fea)
-                    #chem_fea.append(chem_tmp_fea)
+                    train.append(tmp_fea)                    
                 else:
-                    print RNA, protein    
-        #for key, val in RNA_fea_dict.iteritems():
-            
+                    print RNA, protein                  
            
     return np.array(train), label
 
-
-def get_data_deepmind(dataset, deepmind=False, seperate=True, chem_fea=False, extract_only_posi=False,
-                      indep_test=False):
+def get_data(dataset, seperate=True):
     if dataset == 'NPInter':
         X, labels = prepare_NPinter_feature(deepmind=deepmind, seperate=seperate)
     return X, labels
-
-
 
 def transfer_array_format(data):
     formated_matrix1 = []
     formated_matrix2 = []
     for val in data:
         formated_matrix1.append(val[0])
-        formated_matrix2.append(val[1])
-    
+        formated_matrix2.append(val[1])    
     return np.array(formated_matrix1), np.array(formated_matrix2)
 
 def preprocess_data(X, scaler=None, stand = True):
@@ -743,8 +713,7 @@ def get_blend_data(j, clf, skf, X_test, X_dev, Y_dev, blend_train, blend_test):
             blend_train[cv_index, j] = clf.predict_proba(X_cv)[:,1]
             blend_test_j[:, i] = clf.predict_proba(X_test)[:,1]
         # Take the mean of the predictions of the cross validation set
-        blend_test[:, j] = blend_test_j.mean(1)
-    
+        blend_test[:, j] = blend_test_j.mean(1)    
         print 'Y_dev.shape = %s' % (Y_dev.shape)
 
      
@@ -973,8 +942,7 @@ def DeepRPLPI():
         aupr_score = auc(recall, precision1)
         print acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score
         all_performance.append([acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score])
-        #get_blend_data(class_index, RandomForestClassifier(n_estimators=50), skf, prefilter_test, prefilter_train, np.array(train_label_new), blend_train, blend_test)
-        
+                
         print 'deep autoencoder without fine tunning'
         class_index = class_index + 1
         clf = RandomForestClassifier(n_estimators=50) 
@@ -986,60 +954,49 @@ def DeepRPLPI():
         acc, precision, sensitivity, specificity, MCC = calculate_performace(len(real_labels), proba,  real_labels)
         fpr, tpr, auc_thresholds = roc_curve(real_labels, ae_y_pred_prob)
         auc_score = auc(fpr, tpr)
-	#scipy.io.savemat('deep_without',{'fpr':fpr,'tpr':tpr,'auc_score':auc_score})
-        ## AUPR score add 
-        precision1, recall, pr_threshods = precision_recall_curve(real_labels, ae_y_pred_prob)
+	precision1, recall, pr_threshods = precision_recall_curve(real_labels, ae_y_pred_prob)
         aupr_score = auc(recall, precision1)
         print acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score
         all_performance_bef.append([acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score])
 
-        ### Only RF
-	print 'Random Forest raw feature'
+        print 'Random Forest'
 	class_index = class_index + 1
 	clf = RandomForestClassifier(n_jobs=4, criterion='entropy', n_estimators=70, min_samples_split=5)
         clf.fit(prefilter_train, train_label_new)
         ae_y_pred_prob = clf.predict_proba(prefilter_test)[:,1]
         all_prob[class_index] = all_prob[class_index] + [val for val in ae_y_pred_prob]
-        #tmp_aver = [val1 + val2/3 for val1, val2 in zip(ae_y_pred_prob, tmp_aver)]
         proba = transfer_label_from_prob(ae_y_pred_prob)
 
         acc, precision, sensitivity, specificity, MCC = calculate_performace(len(real_labels), proba,  real_labels)
         fpr, tpr, auc_thresholds = roc_curve(real_labels, ae_y_pred_prob)
         auc_score = auc(fpr, tpr)
-        #scipy.io.savemat('raw',{'fpr':fpr,'tpr':tpr,'auc_score':auc_score})
-        ## AUPR score add
         precision1, recall, pr_threshods = precision_recall_curve(real_labels, ae_y_pred_prob)
         aupr_score = auc(recall, precision1)
-        #scipy.io.savemat('raw_aupr',{'recall':recall,'precision':precision1,'aupr_score':aupr_score}) 
         print "RF :", acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score
 	all_performance_rf.append([acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score])
         
-        print 'Extra trees raw feature'
+        print 'Extra trees'
 	class_index = class_index + 1
 	etree = ExtraTreesClassifier(n_jobs=4,  n_estimators=100, criterion='gini', min_samples_split=10,max_features=50, max_depth=40, min_samples_leaf=4)
         etree.fit(prefilter_train, train_label_new)
         ae_y_pred_prob = etree.predict_proba(prefilter_test)[:,1]
         all_prob[class_index] = all_prob[class_index] + [val for val in ae_y_pred_prob]
-        #tmp_aver = [val1 + val2/3 for val1, val2 in zip(ae_y_pred_prob, tmp_aver)]
         proba = transfer_label_from_prob(ae_y_pred_prob)
 
         acc, precision, sensitivity, specificity, MCC = calculate_performace(len(real_labels), proba,  real_labels)
         fpr, tpr, auc_thresholds = roc_curve(real_labels, ae_y_pred_prob)
         auc_score = auc(fpr, tpr)
-        #scipy.io.savemat('raw',{'fpr':fpr,'tpr':tpr,'auc_score':auc_score})
-        ## AUPR score add
         precision1, recall, pr_threshods = precision_recall_curve(real_labels, ae_y_pred_prob)
         aupr_score = auc(recall, precision1)
         print "Extra-trees :", acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score
 	all_performance_xt.append([acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score])
         
-        print 'Decision Tree raw feature'
+        print 'Decision Tree'
 	class_index = class_index + 1
 	clf = DecisionTreeClassifier()
         clf.fit(prefilter_train, train_label_new)
         ae_y_pred_prob = clf.predict_proba(prefilter_test)[:,1]
         all_prob[class_index] = all_prob[class_index] + [val for val in ae_y_pred_prob]
-        #tmp_aver = [val1 + val2/3 for val1, val2 in zip(ae_y_pred_prob, tmp_aver)]
         proba = transfer_label_from_prob(ae_y_pred_prob)
 
         acc, precision, sensitivity, specificity, MCC = calculate_performace(len(real_labels), proba,  real_labels)
@@ -1047,17 +1004,15 @@ def DeepRPLPI():
         auc_score = auc(fpr, tpr)
         precision1, recall, pr_threshods = precision_recall_curve(real_labels, ae_y_pred_prob)
         aupr_score = auc(recall, precision1)
-        #scipy.io.savemat('raw_aupr',{'recall':recall,'precision':precision1,'aupr_score':aupr_score}) 
         print "dt :", acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score
 	all_performance_dt.append([acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score])
         	
-	print 'Gradient boosting raw feature'
+	print 'Gradient boosting'
 	class_index = class_index + 1
         clf = GradientBoostingClassifier(n_estimators=70, random_state=7)
         clf.fit(prefilter_train, train_label_new)
         gb_ae_y_pred_prob = clf.predict_proba(prefilter_test)[:,1]
         all_prob[class_index] = all_prob[class_index] + [val for val in gb_ae_y_pred_prob]
-        #tmp_aver = [val1 + val2/3 for val1, val2 in zip(ae_y_pred_prob, tmp_aver)]
         gb_proba = transfer_label_from_prob(gb_ae_y_pred_prob)
 
         acc, precision, sensitivity, specificity, MCC = calculate_performace(len(real_labels), gb_proba,  real_labels)
@@ -1068,23 +1023,19 @@ def DeepRPLPI():
         print "GB :", acc, precision, sensitivity, specificity, MCC, auc_score, gb_aupr_score
 	all_performance_gb.append([acc, precision, sensitivity, specificity, MCC, auc_score, gb_aupr_score])
         
-	print 'Extreme Gradient boosting raw feature'
+	print 'Extreme Gradient boosting'
 	class_index = class_index + 1
         clf = XGBClassifier()
         clf.fit(prefilter_train, train_label_new)
         ae_y_pred_prob = clf.predict_proba(prefilter_test)[:,1]
         all_prob[class_index] = all_prob[class_index] + [val for val in ae_y_pred_prob]
-        #tmp_aver = [val1 + val2/3 for val1, val2 in zip(ae_y_pred_prob, tmp_aver)]
         proba = transfer_label_from_prob(ae_y_pred_prob)
 
         acc, precision, sensitivity, specificity, MCC = calculate_performace(len(real_labels), proba,  real_labels)
         fpr, tpr, auc_thresholds = roc_curve(real_labels, ae_y_pred_prob)
-        auc_score = auc(fpr, tpr)
-        #scipy.io.savemat('raw',{'fpr':fpr,'tpr':tpr,'auc_score':auc_score})
-        ## AUPR score add
+        auc_score = auc(fpr, tpr)     
         precision1, recall, pr_threshods = precision_recall_curve(real_labels, ae_y_pred_prob)
         aupr_score = auc(recall, precision1)
-        #scipy.io.savemat('raw_aupr',{'recall':recall,'precision':precision1,'aupr_score':aupr_score}) 
         print "XGB :", acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score
 	all_performance_xgb.append([acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score])
            
@@ -1107,10 +1058,8 @@ def DeepRPLPI():
         aupr_score = auc(recall, precision1)
         print "CatBoost :", acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score
 	all_performance_ctb.append([acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score])
-
-
-	#Ensemble
-	print 'Ensemble Classifiers raw feature'
+	
+	print 'Ensemble Classifiers'
 	class_index = class_index + 1
         prefilter_train = np.concatenate((train1, train2), axis = 1)
         prefilter_test = np.concatenate((test1, test2), axis = 1)
@@ -1118,11 +1067,9 @@ def DeepRPLPI():
 	etree = ExtraTreesClassifier(n_jobs=4,  n_estimators=100, criterion='gini', min_samples_split=10,max_features=50, max_depth=40, min_samples_leaf=4)
 	cmodel = catboost.CatBoostClassifier(iterations=150,depth=15,learning_rate=0.5,loss_function='Logloss', verbose=False) 
 	eclf = VotingClassifier(estimators=[('ctb', cmodel), ('xt', etree)], voting='soft')
-	#sclf = StackingClassifier(classifiers=[clf1, clf3, clf4], meta_classifier=clf2)
 	eclf.fit(prefilter_train, train_label_new)
 	ae_y_pred_prob = eclf.predict_proba(prefilter_test)[:,1]
         all_prob[class_index] = all_prob[class_index] + [val for val in ae_y_pred_prob]
-        #tmp_aver = [val1 + val2/3 for val1, val2 in zip(ae_y_pred_prob, tmp_aver)]
         proba = transfer_label_from_prob(ae_y_pred_prob)        
         acc, precision, sensitivity, specificity, MCC = calculate_performace(len(real_labels), proba,  real_labels)
         fpr, tpr, auc_thresholds = roc_curve(real_labels, ae_y_pred_prob)
@@ -1173,7 +1120,6 @@ def DeepRPLPI():
     plt.ylabel('Precision')
     plt.title('AUPRC')
     plt.legend(loc="lower right")
-    #plt.savefig(save_fig_dir + selected + '_' + class_type + '.png') 
     plt.show() 
    
 

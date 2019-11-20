@@ -696,7 +696,6 @@ def preprocess_labels(labels, encoder=None, categorical=True):
         y = np_utils.to_categorical(y)
     return y, encoder
 
-
 def get_blend_data(j, clf, skf, X_test, X_dev, Y_dev, blend_train, blend_test):
         print 'Training classifier [%s]' % (j)
         blend_test_j = np.zeros((X_test.shape[0], len(skf))) # Number of testing data x Number of folds , we will take the mean of the predictions later
@@ -715,7 +714,6 @@ def get_blend_data(j, clf, skf, X_test, X_dev, Y_dev, blend_train, blend_test):
         # Take the mean of the predictions of the cross validation set
         blend_test[:, j] = blend_test_j.mean(1)    
         print 'Y_dev.shape = %s' % (Y_dev.shape)
-
      
 def multiple_layer_autoencoder(X_train, X_test, activation = 'linear', batch_size = 100, nb_epoch = 20, last_dim = 64):
     nb_hidden_layers = [X_train.shape[1], 256, 128, last_dim]
@@ -748,9 +746,7 @@ def multiple_layer_autoencoder(X_train, X_test, activation = 'linear', batch_siz
         #X_test_tmp = ae.predict(X_test_tmp)
         
     #return encoders, X_train_tmp, X_test_tmp
-    return encoders
-      
-      
+    return encoders      
 
 def autoencoder_two_subnetwork_fine_tuning(X_train1, X_train2, Y_train, X_test1, X_test2, Y_test = None, batch_size =100, nb_epoch = 20):
     print 'autoencode learning'
@@ -758,14 +754,12 @@ def autoencoder_two_subnetwork_fine_tuning(X_train1, X_train2, Y_train, X_test1,
     encoders1 = multiple_layer_autoencoder(X_train1, X_test1, activation = 'sigmoid', batch_size = batch_size, nb_epoch = nb_epoch, last_dim = last_dim)
     encoders2 = multiple_layer_autoencoder(X_train2, X_test2, activation = 'sigmoid', batch_size = batch_size, nb_epoch = nb_epoch, last_dim = last_dim)
     #pdb.set_trace()
-    
     X_train1_tmp_bef = np.copy(X_train1)
     X_test1_tmp_bef = np.copy(X_test1) 
     for ae in encoders1:
         X_train1_tmp_bef = ae.predict(X_train1_tmp_bef)
         print X_train1_tmp_bef.shape
-        X_test1_tmp_bef = ae.predict(X_test1_tmp_bef)
-    
+        X_test1_tmp_bef = ae.predict(X_test1_tmp_bef)    
     X_train2_tmp_bef = np.copy(X_train2)
     X_test2_tmp_bef = np.copy(X_test2) 
     for ae in encoders2:
@@ -788,8 +782,7 @@ def autoencoder_two_subnetwork_fine_tuning(X_train1, X_train2, Y_train, X_test1,
             ind = ind + 1
     model1.add(PReLU((sec_num_hidden,)))
     model1.add(BatchNormalization((sec_num_hidden,)))
-    model1.add(Dropout(0.5))
-    
+    model1.add(Dropout(0.5))    
 
     model2 = Sequential()
     ind = 0
@@ -866,8 +859,7 @@ def DeepRPLPI():
     all_performance_gb = []
     all_performance_xgb = []
     all_performance_ctb = []
-    all_performance_ensemb = []
-    
+    all_performance_ensemb = []    
     all_performance_blend = []
     all_labels = []
     all_prob = {}
@@ -887,8 +879,7 @@ def DeepRPLPI():
         train2 = np.array([x for i, x in enumerate(X_data2) if i % num_cross_val != fold])
         test2 = np.array([x for i, x in enumerate(X_data2) if i % num_cross_val == fold])
         train_label = np.array([x for i, x in enumerate(y) if i % num_cross_val != fold])
-        test_label = np.array([x for i, x in enumerate(y) if i % num_cross_val == fold])
-  
+        test_label = np.array([x for i, x in enumerate(y) if i % num_cross_val == fold])  
           
         real_labels = []
         for val in test_label:
@@ -966,7 +957,6 @@ def DeepRPLPI():
         ae_y_pred_prob = clf.predict_proba(prefilter_test)[:,1]
         all_prob[class_index] = all_prob[class_index] + [val for val in ae_y_pred_prob]
         proba = transfer_label_from_prob(ae_y_pred_prob)
-
         acc, precision, sensitivity, specificity, MCC = calculate_performace(len(real_labels), proba,  real_labels)
         fpr, tpr, auc_thresholds = roc_curve(real_labels, ae_y_pred_prob)
         auc_score = auc(fpr, tpr)
@@ -982,7 +972,6 @@ def DeepRPLPI():
         ae_y_pred_prob = etree.predict_proba(prefilter_test)[:,1]
         all_prob[class_index] = all_prob[class_index] + [val for val in ae_y_pred_prob]
         proba = transfer_label_from_prob(ae_y_pred_prob)
-
         acc, precision, sensitivity, specificity, MCC = calculate_performace(len(real_labels), proba,  real_labels)
         fpr, tpr, auc_thresholds = roc_curve(real_labels, ae_y_pred_prob)
         auc_score = auc(fpr, tpr)
@@ -998,7 +987,6 @@ def DeepRPLPI():
         ae_y_pred_prob = clf.predict_proba(prefilter_test)[:,1]
         all_prob[class_index] = all_prob[class_index] + [val for val in ae_y_pred_prob]
         proba = transfer_label_from_prob(ae_y_pred_prob)
-
         acc, precision, sensitivity, specificity, MCC = calculate_performace(len(real_labels), proba,  real_labels)
         fpr, tpr, auc_thresholds = roc_curve(real_labels, ae_y_pred_prob)
         auc_score = auc(fpr, tpr)
@@ -1014,7 +1002,6 @@ def DeepRPLPI():
         gb_ae_y_pred_prob = clf.predict_proba(prefilter_test)[:,1]
         all_prob[class_index] = all_prob[class_index] + [val for val in gb_ae_y_pred_prob]
         gb_proba = transfer_label_from_prob(gb_ae_y_pred_prob)
-
         acc, precision, sensitivity, specificity, MCC = calculate_performace(len(real_labels), gb_proba,  real_labels)
         fpr, tpr, auc_thresholds = roc_curve(real_labels, gb_ae_y_pred_prob)
         auc_score = auc(fpr, tpr)
@@ -1030,21 +1017,18 @@ def DeepRPLPI():
         ae_y_pred_prob = clf.predict_proba(prefilter_test)[:,1]
         all_prob[class_index] = all_prob[class_index] + [val for val in ae_y_pred_prob]
         proba = transfer_label_from_prob(ae_y_pred_prob)
-
         acc, precision, sensitivity, specificity, MCC = calculate_performace(len(real_labels), proba,  real_labels)
         fpr, tpr, auc_thresholds = roc_curve(real_labels, ae_y_pred_prob)
         auc_score = auc(fpr, tpr)     
         precision1, recall, pr_threshods = precision_recall_curve(real_labels, ae_y_pred_prob)
         aupr_score = auc(recall, precision1)
         print "XGB :", acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score
-	all_performance_xgb.append([acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score])
-           
+	all_performance_xgb.append([acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score])           
 
 	print 'CatBoost'
 	class_index = class_index + 1
         prefilter_train = np.concatenate((train1, train2), axis = 1)
         prefilter_test = np.concatenate((test1, test2), axis = 1)
-
         cmodel = catboost.CatBoostClassifier(iterations=150,depth=15,learning_rate=0.5,loss_function='Logloss', verbose=False)
 	print ('begin to predict data')
 	cmodel.fit(prefilter_train, train_label_new)
@@ -1063,7 +1047,6 @@ def DeepRPLPI():
 	class_index = class_index + 1
         prefilter_train = np.concatenate((train1, train2), axis = 1)
         prefilter_test = np.concatenate((test1, test2), axis = 1)
-
 	etree = ExtraTreesClassifier(n_jobs=4,  n_estimators=100, criterion='gini', min_samples_split=10,max_features=50, max_depth=40, min_samples_leaf=4)
 	cmodel = catboost.CatBoostClassifier(iterations=150,depth=15,learning_rate=0.5,loss_function='Logloss', verbose=False) 
 	eclf = VotingClassifier(estimators=[('ctb', cmodel), ('xt', etree)], voting='soft')
@@ -1078,8 +1061,7 @@ def DeepRPLPI():
         aupr_score = auc(recall, precision1)
         print "Ens :", acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score
         all_performance_ensemb.append([acc, precision, sensitivity, specificity, MCC, auc_score, aupr_score]) 
-        print '---' * 50
-               
+        print '---' * 50               
     
     print 'mean performance of random forest using raw feature'
     print np.mean(np.array(all_performance_rf), axis=0)
@@ -1120,13 +1102,11 @@ def DeepRPLPI():
     plt.ylabel('Precision')
     plt.title('AUPRC')
     plt.legend(loc="lower right")
-    plt.show() 
-   
+    plt.show()    
 
 def transfer_label_from_prob(proba):
     label = [1 if val>=0.5 else 0 for val in proba]
     return label
-
 
 if __name__=="__main__":
     DeepRPLPI()

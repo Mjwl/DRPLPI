@@ -802,7 +802,7 @@ def autoencoder_two_subnetwork_fine_tuning(X_train1, X_train2, Y_train, X_test1,
     model.add(Activation('softmax'))
     #sgd = SGD(lr=3, decay=1e-6, momentum=0.9, nesterov=True)
     adadelta = Adadelta(lr=3.0, rho=0.95, epsilon=1e-08)
-    model.compile(loss='categorical_crossentropy', optimizer=adadelta) #'rmsprop')
+    model.compile(loss='hinge', optimizer=adadelta) #'rmsprop')
     model.fit([X_train1, X_train2], Y_train, batch_size=100, nb_epoch=30, verbose=0, callbacks = [EarlyStopping(monitor='val_acc', patience=2)])
     X_train1_tmp = np.copy(X_train1)
     X_test1_tmp = np.copy(X_test1)  

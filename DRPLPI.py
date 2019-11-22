@@ -70,23 +70,6 @@ def get_tri_nucleotide_composition(tris, seq):
         tri_feature.append(float(num)/seq_len)
     return tri_feature
 
-def get_4_trids():
-    nucle_com = []
-    chars = ['A', 'C', 'G', 'U']
-    base=len(chars)
-    end=len(chars)**4
-    for i in range(0,end):
-        n=i
-        ch0=chars[n%base]
-        n=n/base
-        ch1=chars[n%base]
-        n=n/base
-        ch2=chars[n%base]
-        n=n/base
-        ch3=chars[n%base]
-        nucle_com.append(ch0 + ch1 + ch2 + ch3)
-    return  nucle_com  
-
 def get_3_protein_trids():
     nucle_com = []
     chars = ['0', '1', '2', '3', '4', '5', '6']
@@ -126,25 +109,6 @@ def translate_sequence (seq, TranslationDict):
         to_list.append(v)    
     TRANS_seq = seq.translate(string.maketrans(str(from_list), str(to_list)))    
     return TRANS_seq
-
-def get_4_nucleotide_composition(tris, seq, pythoncount = True):
-    seq_len = len(seq)
-    tri_feature = []
-    
-    if pythoncount:
-        for val in tris:
-            num = seq.count(val)
-            tri_feature.append(float(num)/seq_len)
-    else:
-        k = len(tris[0])
-        tmp_fea = [0] * len(tris)
-        for x in range(len(seq) + 1- k):
-            kmer = seq[x:x+k]
-            if kmer in tris:
-                ind = tris.index(kmer)
-                tmp_fea[ind] = tmp_fea[ind] + 1
-        tri_feature = [float(val)/seq_len for val in tmp_fea]                
-    return tri_feature
 
 def TransDict_from_list(groups):
     transDict = dict()
@@ -601,11 +565,11 @@ def prepare_NPinter_feature(seperate = False, chem_fea = True):
                 RNA_seq = seq_dict[RNA]
                 protein_seq = translate_sequence (protein_seq_dict[protein], group_dict)
                 if deepmind:
-                    RNA_tri_fea = RNA_feature_extract(feature, RNA_seq)
+                    RNA_tri_fea = rna_feature_extract(feature, RNA_seq)
                     protein_tri_fea = protein_feature_extract(feature, protein_seq) 
                     train.append((RNA_tri_fea, protein_tri_fea))
                 else:
-                    RNA_tri_fea = RNA_feature_extract(feature, RNA_seq)
+                    RNA_tri_fea = rna_feature_extract(feature, RNA_seq)
                     protein_tri_fea = protein_tri_fea = protein_feature_extract(feature, protein_seq)
                     if seperate:
                         tmp_fea = (protein_tri_fea, RNA_tri_fea)
@@ -646,11 +610,11 @@ def prepare_NPinter_feature(seperate = False, chem_fea = True):
                     RNA_seq = seq_dict[RNA]
                     protein_seq = translate_sequence (protein_seq_dict[select_pro], group_dict)
                     if deepmind:
-                        RNA_tri_fea = RNA_feature_extract(feature, RNA_seq)
+                        RNA_tri_fea = rna_feature_extract(feature, RNA_seq)
                         protein_tri_fea = protein_feature_extract(feature, protein_seq)
                         train.append((RNA_tri_fea, protein_tri_fea))
                     else:
-                        RNA_tri_fea = RNA_feature_extract(feature, RNA_seq)
+                        RNA_tri_fea = rna_feature_extract(feature, RNA_seq)
                         protein_tri_fea = protein_feature_extract(feature, protein_seq)
                     if seperate:
                         tmp_fea = (protein_tri_fea, RNA_tri_fea)

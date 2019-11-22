@@ -1,2 +1,2 @@
 # DRPLPI
-lncRNA-protein interaction prediction
+lncRNA-protein interaction prediction based on sequence-structure features

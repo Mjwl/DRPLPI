@@ -602,11 +602,11 @@ def prepare_NPinter_feature(seperate = False, chem_fea = True):
                 protein_seq = translate_sequence (protein_seq_dict[protein], group_dict)
                 if deepmind:
                     RNA_tri_fea = RNA_feature_extract(feature, RNA_seq)
-                    protein_tri_fea = get_RNA_seq_concolutional_array(protein_seq) 
+                    protein_tri_fea = protein_feature_extract(feature, protein_seq) 
                     train.append((RNA_tri_fea, protein_tri_fea))
                 else:
                     RNA_tri_fea = RNA_feature_extract(feature, RNA_seq)
-                    protein_tri_fea = get_4_nucleotide_composition(protein_tris, protein_seq, pythoncount =False)
+                    protein_tri_fea = protein_tri_fea = protein_feature_extract(feature, protein_seq)
                     if seperate:
                         tmp_fea = (protein_tri_fea, RNA_tri_fea)
 
@@ -647,11 +647,11 @@ def prepare_NPinter_feature(seperate = False, chem_fea = True):
                     protein_seq = translate_sequence (protein_seq_dict[select_pro], group_dict)
                     if deepmind:
                         RNA_tri_fea = RNA_feature_extract(feature, RNA_seq)
-                        protein_tri_fea = get_RNA_seq_concolutional_array(protein_seq) 
+                        protein_tri_fea = protein_feature_extract(feature, protein_seq)
                         train.append((RNA_tri_fea, protein_tri_fea))
                     else:
                         RNA_tri_fea = RNA_feature_extract(feature, RNA_seq)
-                        protein_tri_fea = get_4_nucleotide_composition(protein_tris, protein_seq, pythoncount =False)
+                        protein_tri_fea = protein_feature_extract(feature, protein_seq)
                     if seperate:
                         tmp_fea = (protein_tri_fea, RNA_tri_fea)
                     else:

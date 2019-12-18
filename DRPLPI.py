@@ -591,11 +591,11 @@ def multiple_layer_autoencoder(X_train, X_test, activation = 'linear', batch_siz
 	max_features = X_train.shape[1]
 	encoder = Embedding(max_features, 256)
 	encoder = LSTM(256, num_hidden, activation='sigmoid', inner_activation='hard_sigmoid')
-	encoder = Dense(n_in, n_out, activation=activation, init='glorot_normal')
+	encoder = Dense(n_in, n_out, activation=activation, init='glorot_normal', W_constraint = unitnorm())
 		
 	decoder = Attention(max_features, 256) 
 	decoder = LSTM(256, num_hidden, activation='sigmoid', inner_activation='hard_sigmoid')     
-	decoder = containers.Sequential([Dense(n_out, n_in, activation=activation, init='glorot_normal')])
+	decoder = Dense(n_out, n_in, activation=activation, init='glorot_normal'), W_constraint = unitnorm())
         ae.add(AutoEncoder(encoder=encoder, decoder=decoder,
                            output_reconstruction=False))
         ae.add(Dropout(0.5))
